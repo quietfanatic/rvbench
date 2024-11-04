@@ -1,0 +1,51 @@
+.globl misc
+misc:
+    li a0,10000000
+    li a1,1
+    li a2,1
+    li a3,1
+    li a4,1
+0:
+    mul a1,a1,a1
+    mul a2,a2,a2
+    mul a3,a3,a3
+    mul a4,a4,a4
+    mul a1,a1,a1
+    mul a2,a2,a2
+    mul a3,a3,a3
+    mul a4,a4,a4
+    mul a1,a1,a1
+    mul a2,a2,a2
+    mul a3,a3,a3
+    mul a4,a4,a4
+    mul a1,a1,a1
+    mul a2,a2,a2
+    mul a3,a3,a3
+    mul a4,a4,a4
+    mul a1,a1,a1
+    mul a2,a2,a2
+    mul a3,a3,a3
+    mul a4,a4,a4
+    mul a1,a1,a1
+    mul a2,a2,a2
+    mul a3,a3,a3
+    mul a4,a4,a4
+    mul a1,a1,a1
+    mul a2,a2,a2
+    mul a3,a3,a3
+    mul a4,a4,a4
+    mul a1,a1,a1
+    mul a2,a2,a2
+    mul a3,a3,a3
+    mul a4,a4,a4
+    mul a1,a1,a1
+    mul a2,a2,a2
+    mul a3,a3,a3
+    mul a4,a4,a4
+    mul a1,a1,a1
+    mul a2,a2,a2
+    mul a3,a3,a3
+    mul a4,a4,a4
+    addi a0,a0,-1
+    bnez a0,0b
+    ret

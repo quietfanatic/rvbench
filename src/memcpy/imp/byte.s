@@ -1,6 +1,5 @@
 .text
 
- # Align function so loop isn't aligned
 .p2align 3
 .globl my_memcpy
 my_memcpy:

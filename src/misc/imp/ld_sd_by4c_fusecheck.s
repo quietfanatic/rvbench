@@ -11,10 +11,15 @@ dst: .zero 192
 .align 3
 .globl misc
 misc:
-     # These should all take 8 bytes, aligning the loop to 8 bytes
     li t0,10000000
     lla a4,src
     lla a5,dst
+    sd a4,24(a4)
+    sd a4,56(a4)
+    sd a4,88(a4)
+    sd a4,120(a4)
+    sd a4,152(a4)
+    sd a4,184(a4)
 0:  ld a0,0(a4)
     ld a1,8(a4)
     addi s0,s0,0
