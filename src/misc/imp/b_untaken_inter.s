@@ -1,0 +1,51 @@
+.align 3
+.globl misc
+misc:
+    li a0,10000000
+    li a1,1
+    li a2,1
+0:
+    addi a1,a1,1
+    beqz a1,1f
+    addi a2,a2,1
+    beqz a2,1f
+    addi a1,a1,1
+    beqz a1,1f
+    addi a2,a2,1
+    beqz a2,1f
+    addi a1,a1,1
+    beqz a1,1f
+    addi a2,a2,1
+    beqz a2,1f
+    addi a1,a1,1
+    beqz a1,1f
+    addi a2,a2,1
+    beqz a2,1f
+    addi a1,a1,1
+    beqz a1,1f
+    addi a2,a2,1
+    beqz a2,1f
+    addi a1,a1,1
+    beqz a1,1f
+    addi a2,a2,1
+    beqz a2,1f
+    addi a1,a1,1
+    beqz a1,1f
+    addi a2,a2,1
+    beqz a2,1f
+    addi a1,a1,1
+    beqz a1,1f
+    addi a2,a2,1
+    beqz a2,1f
+    addi a1,a1,1
+    beqz a1,1f
+    addi a2,a2,1
+    beqz a2,1f
+    addi a1,a1,1
+    beqz a1,1f
+    addi a2,a2,1
+    beqz a2,1f
+    addi a0,a0,-1
+    bnez a0,0b
+    ret
+1:  unimp

@@ -63,10 +63,16 @@ SpacemiT K1:
   value and immediately store it the next cycle.  Doing multiple loads then
   multiple stores seems to be slightly slower than alternating loads and stores.
 - An instruction cannot pair with another instruction if the first writes a
-  register that is read or written by the second.  An exception is when the
-  first is an lui or auipc, which seem to pair with just about any other
-  instruction, regardless of whether it reads or writes the register that the
-  first one wrote.
+  register that is read or written by the second.
+- lui and auipc can fuse with certain instructions after them that make sense,
+  such as addi, ld, sd, etc.  This allows the instructions to run as a single
+  unit even if they use the same register.  The fused unit can even be paired
+  with another instruction before or after it, which can bring the IPC above 2.
+  However the combination of fusing and pairing is only possible if some or all
+  of the instructions are in compressed format, since the fetcher can only fetch
+  around 8 bytes at a time (2 uncompressed instructions).  In the rare case
+  where all 4 instructions are compressed, a fused unit can pair with another
+  fused unit, bringing the IPC up to 4.
 - Only one canonical nop can be executed per cycle, including compressed nops.
   This is likely because the nop is taken at face value as "addi x0,x0,0", which
   both reads and writes the x0 register, so there is a false dependency between
@@ -74,11 +80,11 @@ SpacemiT K1:
   that doesn't affect state, such as "addi x31,x31,0", then they can execute 2
   per cycle.
 - Correctly predicted branch instructions are removed from the pipeline, which
-  can result in a reported IPC greater than 2.  It's likely that an instruction
-  before a taken branch can pair with the instruction after the branch.
+  can result in a reported IPC greater than 2.  An instruction before an untaken
+  branch can pair with one after it, and maybe for a taken branch too. There's
+  a limit of 1 untaken branch per cycle.  Taken branches are a bit slower.
 - Using compressed instructions can have erratic effects on performance, usually
-  positive but occasionally negative.  There may be a penalty for a 4-byte
-  instruction that crosses an 8-byte alignment boundary.
+  positive but occasionally negative.  I'm not sure why.
 
 #### memcpy
 On this processor, the ideal memcpy implementation appears to be some variation
