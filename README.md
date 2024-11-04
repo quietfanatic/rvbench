@@ -13,27 +13,32 @@ perl make.pl --jobs=7 out/<other>/stats  # run only stats for something else
 ##### Example output (out/memcpy/stats)
 
 ```
-MEMCPY                three   16a   32a   32s   32u   64a  128a  256a   2ka   2ks   2ku  64ka   rnd  test
----------------------------------------------------------------------------------------------------------
-             e8m1_ia:   122   182   112   111   112   202   383   747   520   583   582   892  1603  pass
-                e8m1:   122   111   112   121   121   192   353   674   518   584   584   896  1535  pass
-                e8m2:   131   132   131   142   142   132   240   508   424   466   465   882  1564  pass
-                e8m4:   173   172   173   182   182   172   183   432   379   415   415   719  1315  pass
-                e8m8:   323   323   324   343   345   328   323   422   375   397   395   676  1222  pass
-           e8any_1_1:   122   111   111   111   112   172   263   423   375   394   393   695  1253  pass
-           e8any_1_2:   123   112   112   111   112   172   264   423   377   393   392   674  1227  pass
-        e8any_1_2_ia:   123   111   112   112   112   172   262   424   374   392   392   696  1236  pass
-           e8any_1_3:   121   112   111   111   112   173   263   424   378   394   391   694  1243  pass
-           e8any_1_4:   122   111   111   112   111   172   263   425   377   392   393   631  1235  pass
-        e8any_1_4_ia:   122   112   112   111   112   172   263   411   373   392   393   998  1911  pass
-           e8any_1_5:   121   152   111   111   113   182   275   424   371   393   393   706  1218  pass
-      e8conservative:   122   111   111   111   112   172   262   433   307   320   313   682  1198  pass
-     e8conservative2:   122   172   111   112   112   182   272   434   303   303   306   646  1221  pass
-       e8progressive:   121   112   111   112   112   202   352   735   411   434   436  1054  1666  pass
-    e8progressive_ia:   122   182   111   112   111   222   385   822   411   431   437   983  1782  pass
-          glibc_2_39:   194   162   162   162   162   222   304   592   404   413   457   953  1614  pass
-          glibc_2_40:   201   361   369   372   356   503   745   922   378   369   448   828  2257  pass
-               dummy:    81    75    74    75    74    76    74    72     9     9     9     1     3  fail
+MEMCPY                three   16a   32a   32s   32u   64a  128a  256a   2ka   2ks   2ku  64ka  64ko  rnda  rndo  rndu  test
+---------------------------------------------------------------------------------------------------------------------------
+          glibc_2_39:   192   162   162   162   162   224   302   605   403   413   458   974   872  1826  1698  1419  pass
+          glibc_2_40:   204   371   363   369   371   503   745   936   379   366   446   779   789  2056  1979  2002  pass
+             e8m1_ia:   121   182   111   111   111   202   384   747   526   582   584   887  1144  1637  1482  1777  pass
+                e8m1:   122   112   111   122   122   192   356   679   519   585   584   868   820  1499  1668  2066  pass
+              e8m1_2:   122   202   132   132   132   212   373   696   458   521   523   877   849  1514  1547  1757  pass
+                e8m2:   131   132   131   145   142   132   237   510   423   464   467   898   813  1579  1702  1835  pass
+                e8m4:   172   172   172   184   182   172   182   432   378   416   414   711   661  1252  1726  2107  pass
+                e8m8:   324   323   323   343   343   328   324   425   376   398   399   669   605  1228  2486  2095  pass
+           e8any_1_1:   121   112   112   112   112   172   262   423   375   391   393   657   831  1177  2015  1813  pass
+      e8conservative:   122   112   112   111   112   172   262   396   305   325   324   647   611  1241  1878  2288  pass
+       e8progressive:   121   112   113   111   112   204   343   745   409   435   436  1106   863  1779  1880  1697  pass
+           e8any_al2:   121   112   114   112   112   172   292   396   375   435   438   687   604  1334  1187  2038  pass
+           e8any_as2:   121   112   111   113   112   172   264   394   379   435   438   679   622  1233  1223  1067  pass
+           e8any_as3:   122   111   111   112   112   172   266   393   376   438   439   685   847  1226  1707  1799  pass
+           e8any_as4:   122   172   113   111   112   182   278   404   372   434   434   708   950  1227  1209  1074  pass
+           e8any_as5:   121   111   112   112   112   172   264   398   375   432   427   663   614  1237  1301  1082  pass
+           e8any_as6:   121   172   112   112   113   182   274   394   373   427   429   746   901  1208  1259  1097  pass
+       e8any_as2_2sc:   122   112   112   112   112   172   264   394   375   437   435   671   889  1218  1645  1914  pass
+        e8any_as2_tl:   122   112   112   111   112   172   264   396   327   381   380   655   824  1214  1684  1898  fail
+     e8any_as2_noppy:   121   173   112   112   111   182   307   406   353   395   395   691   910  1228  1686  1929  pass
+           e8con_as2:   121   112   112   112   111   172   265   394   306   345   343   675   978  1246  1667  1968  pass
+           e8con_as3:   123   162   123   121   122   192   284   433   339   379   378   652   751  1199  1834  1667  pass
+            e8m8_as2:   324   393   353   353   353   348   347   463   375   424   425   664   934  1220  1858  1629  pass
+               dummy:    81    73    73    75    74    76    74    73     9     9    10     1     1     2     3     3  fail
 ```
 
 ##### Known issue
@@ -49,18 +54,18 @@ SpacemiT K1 (aka SpacemiT X60 (possibly aka XuanTie C908)):
 
 ##### General instruction behavior
 
-- Aligning loops to 8 bytes can make a significant difference for instruction-
-  limited code, but not as much for bandwidth-limited code (which likely
-  includes a lot of vector-heavy functions).
-- Using compressed instructions usually improves performance, but occasionally
-  reduces it.  There are probably some code alignment issues I don't understand
-  yet.
 - This is a dual-issue in-order CPU, so it's most efficient to schedule
   instructions so that one instruction doesn't depend on the one immediately
   before it.  If you have two dependency chains, interleave them with
   alternating instructions.  A long-running instruction allows more instructions
   to run one-at-a-time until it finishes, so scheduling instructions isn't as
   important when you're doing floating point division or vector processing.
+- Using compressed instructions usually improves performance, but occasionally
+  reduces it.  There are probably some code alignment issues I don't understand
+  yet.
+- Aligning loops to 8 bytes can make a significant difference for instruction-
+  limited code, but not as much for bandwidth-limited code (which likely
+  includes a lot of vector-heavy functions).
 - lui and auipc can fuse with intructions that make sense with them, such as
   addi, ld, sd, etc.  This allows the instructions to run as a single unit even
   if they use the same register.  The fused unit can even run in parallel with
@@ -68,9 +73,9 @@ SpacemiT K1 (aka SpacemiT X60 (possibly aka XuanTie C908)):
   However the combination of fusing and ILP is only possible if some or all of
   the instructions are in compressed format, since the fetcher can only fetch
   around 8 bytes at a time (2 uncompressed instructions).  In the rare case
-  where all 4 instructions are compressed, a fused unit can pair with another
-  fused unit, bringing the IPC up to 4.  This can only happen if the immediates
-  fit in bits 0x0003f03f (0x0001f01f for positive numbers).
+  where all 4 instructions are compressed, a fused unit can run in parallel with
+  another fused unit, bringing the IPC up to 4.  This can only happen if the
+  immediates fit in bits 0x0003f03f (0x0001f01f for positive numbers).
 - Only one canonical nop can be executed per cycle, including compressed nops.
   This is likely because the nop is taken at face value as "addi x0,x0,0", which
   both reads and writes the x0 register, so there is a false dependency between
@@ -79,11 +84,11 @@ SpacemiT K1 (aka SpacemiT X60 (possibly aka XuanTie C908)):
   per cycle.
 - Correctly predicted branch instructions are removed from the pipeline, which
   can result in a reported IPC greater than 2.  An instruction before an untaken
-  branch can pair with one after it, and maybe for a taken branch too. There's a
-  limit of 1 untaken branch per cycle.  Taken branches are a bit slower.
-  Despite the alleged 8-stage pipeline, branch mispredictions seem kinda bad,
-  but the branch predictor seems pretty good.  In one test it appeared to fully
-  learn a repeating random pattern of period 127.
+  branch can run in parallel with one after it, and maybe for a taken branch
+  too. There's a limit of 1 untaken branch per cycle.  Taken branches are a bit
+  slower.  Despite the alleged 8-stage pipeline, branch mispredictions seem
+  kinda bad, but the branch predictor seems pretty good.  In one test it
+  appeared to fully learn a repeating random pattern of period 127.
 - It's not very advertised, but this CPU supports Zicond with the czero
   instructions for branchless programming.  czero cannot fuse, so it should be
   interleaved with pairable instructions.  It's still typically faster than a
@@ -115,7 +120,7 @@ SpacemiT K1 (aka SpacemiT X60 (possibly aka XuanTie C908)):
   As with fused upper+lower instructions, these fused instructions can run in
   parallel with other instructions, but only if enough of them are compressed to
   overcome instruction fetch bandwidth.  When you're saving/restoring
-  caller-saved registers, try to do it with fusable instruction pairs.
+  caller-saved registers, try to do it with fusable load/store pairs.
 - Fused loads and stores can't run in parallel very well with other loads and
   stores.
 - Scalar loads and stores are the same speed regardless of data size.
