@@ -1,6 +1,7 @@
-This is a collection of benchmarks for RISC-V function implementations.  So far, only memcpy is tested.
+This is a collection of benchmarks for RISC-V function implementations.  So far, only memcpy is reasonably well tested.
 
 #### Running
+
 ```
 perl make.pl --jobs=7  # compile, run, and tabulate stats
 perl make.pl clean_stats  # clear cached stats
@@ -10,6 +11,7 @@ perl make.pl --jobs=7 out/<other>/stats  # run only stats for something else
 ```
 
 #### Example Output (perl make.pl out/memcpy/stats)
+
 ```
 MEMCPY                 three   16a   32a   32s   32u   64a  128a  256a   2ka   2ks   2ku  64ka   rnd  test
 ---------------------------------------------------------------------------------------------------------
@@ -32,10 +34,10 @@ MEMCPY                 three   16a   32a   32s   32u   64a  128a  256a   2ka   2
                dummy:    81    79    80    77    79    78    77    80    10    10    10     1     2  fail
 ```
 
-#### Conclusions
+#### Analysis
 
 Here are some things I've learned about the processor I have, which is a
-SpacemiT K1:
+SpacemiT K1 (aka SpacemiT X60 (possibly aka XuanTie C908)):
 
 - Misaligned access is supported and fast for scalars.  The stdlib memcpy takes
   advantage of this.
@@ -56,6 +58,9 @@ SpacemiT K1:
 - Aligning loops to 8 bytes makes a significant difference for instruction-
   limited code, but not as much for bandwidth-limited code (which likely
   includes a lot of vector-heavy functions).
+- Using compressed instructions can have erratic effects on performance, usually
+  positive but occasionally negative.  There are probably some code alignment
+  issues I don't understand yet.
 - This is a dual-issue in-order CPU, so it's most efficient to schedule
   instructions so that one instruction doesn't depend on the one immediately
   before it.  This may not matter if throughput is limited by other factors.
@@ -72,7 +77,8 @@ SpacemiT K1:
   of the instructions are in compressed format, since the fetcher can only fetch
   around 8 bytes at a time (2 uncompressed instructions).  In the rare case
   where all 4 instructions are compressed, a fused unit can pair with another
-  fused unit, bringing the IPC up to 4.
+  fused unit, bringing the IPC up to 4.  This can only happen if the immediates
+  fit in bits 0x0003f03f (0x0001f01f for positive numbers).
 - Only one canonical nop can be executed per cycle, including compressed nops.
   This is likely because the nop is taken at face value as "addi x0,x0,0", which
   both reads and writes the x0 register, so there is a false dependency between
@@ -81,12 +87,32 @@ SpacemiT K1:
   per cycle.
 - Correctly predicted branch instructions are removed from the pipeline, which
   can result in a reported IPC greater than 2.  An instruction before an untaken
-  branch can pair with one after it, and maybe for a taken branch too. There's
-  a limit of 1 untaken branch per cycle.  Taken branches are a bit slower.
-- Using compressed instructions can have erratic effects on performance, usually
-  positive but occasionally negative.  I'm not sure why.
+  branch can pair with one after it, and maybe for a taken branch too. There's a
+  limit of 1 untaken branch per cycle.  Taken branches are a bit slower.
+  Despite the short 8-stage pipeline, branch mispredictions seem kinda bad, but
+  the branch predictor seems pretty good.  In one test it appeared to fully
+  learn a random pattern of period 127.
+- It's not very advertised, but this CPU supports Zicond with the czero
+  instructions for branchless programming.  czero cannot fuse, so it should be
+  interleaved with pairable instructions.  It's still typically faster than a
+  short branch unless the branch is close to 100% predictable.
+- 32-bit scalar integer multiplication has a latency of 3 cycles, 64-bit
+  multiplication takes \5.  There's one multiplier but it's fully pipelined, so
+  one multiplication can be done every cycle.  Integer division is weirdly fast
+  with a data-independent latency of 4 cycles for both 32-bit and 64-bit.  The
+  divider is half-pipelined so one division can be done every 2 cycles.
+- A long-running instruction allows further instructions to run one-per-cycle
+  during them as long as they don't depend on its output.
+- Floating-point add has a latency of 4 cycles for both precisions.  FP
+  multiplication has a latency of 4 for single-precision and 5 for
+  double-precision.  Two floating point multiplications can run simultaneously.
+  Floating-point division and square-root are very slow, with a latency of 16
+  for single precision and 24 for double.  Integer and FP division are not
+  shared and can run in parallel.  The floating point divider is not pipelined
+  except for the very first/last cycle, so you can divide every 15 or 23 cycles.
 
 #### memcpy
+
 On this processor, the ideal memcpy implementation appears to be some variation
 on this function, which selects the lmul based on how much data is left to
 transfer.
@@ -147,6 +173,7 @@ memcpy:
 ```
 
 ##### memcmp
+
 Benchmarks of memcmp are incomplete and not typical of ordinary programs.  I'm
 guessing that in most programs, most string comparisons will find a difference
 within the first 32 or so characters, and if the comparison progresses longer,

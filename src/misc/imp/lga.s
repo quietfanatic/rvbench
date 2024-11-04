@@ -2,6 +2,7 @@
 foo: .zero 8
 
 .text
+
 .globl misc
 misc:
     li a0,10000000
