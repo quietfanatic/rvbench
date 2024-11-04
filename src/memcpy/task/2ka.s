@@ -7,6 +7,7 @@ src: .zero 2048
 
 .text
 
+.align 3
 .globl _start
 _start:
     li s0,1000000

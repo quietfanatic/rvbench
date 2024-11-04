@@ -1,12 +1,15 @@
 .bss
 
 .align 3
+.zero 3
 dst: .zero 65536
+.zero 88
 .align 3
 src: .zero 65536
 
 .text
 
+.align 3
 .globl _start
 _start:
     li s0,100000

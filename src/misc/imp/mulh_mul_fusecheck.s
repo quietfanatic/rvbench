@@ -10,8 +10,8 @@ misc:
     addi a4,a4,1
     addi a4,a4,1
     addi a4,a4,1
-    mulhu a2,a1,a1
-    mul a3,a1,a1
+    mulhu a2,a3,a3
+    mul a1,a3,a3
     addi a4,a4,1
     addi a4,a4,1
     addi a4,a4,1
@@ -24,8 +24,8 @@ misc:
     addi a4,a4,1
     addi a4,a4,1
     addi a4,a4,1
-    mulhu a2,a1,a1
-    mul a3,a1,a1
+    mulhu a2,a3,a3
+    mul a1,a3,a3
     addi a4,a4,1
     addi a4,a4,1
     addi a4,a4,1
@@ -38,8 +38,8 @@ misc:
     addi a4,a4,1
     addi a4,a4,1
     addi a4,a4,1
-    mulhu a2,a1,a1
-    mul a3,a1,a1
+    mulhu a2,a3,a3
+    mul a1,a3,a3
     addi a4,a4,1
     addi a4,a4,1
     addi a4,a4,1
@@ -52,8 +52,8 @@ misc:
     addi a4,a4,1
     addi a4,a4,1
     addi a4,a4,1
-    mulhu a2,a1,a1
-    mul a3,a1,a1
+    mulhu a2,a3,a3
+    mul a1,a3,a3
     addi a4,a4,1
     addi a4,a4,1
     addi a4,a4,1
@@ -66,8 +66,8 @@ misc:
     addi a4,a4,1
     addi a4,a4,1
     addi a4,a4,1
-    mulhu a2,a1,a1
-    mul a3,a1,a1
+    mulhu a2,a3,a3
+    mul a1,a3,a3
     addi a4,a4,1
     addi a4,a4,1
     addi a4,a4,1

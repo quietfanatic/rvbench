@@ -4,26 +4,26 @@ misc:
     li a1,1
     li a2,1
 0:
+    mul a2,a1,a1
     mul a1,a1,a1
-    mul a2,a2,a2
+    mul a2,a1,a1
     mul a1,a1,a1
-    mul a2,a2,a2
+    mul a2,a1,a1
     mul a1,a1,a1
-    mul a2,a2,a2
+    mul a2,a1,a1
     mul a1,a1,a1
-    mul a2,a2,a2
+    mul a2,a1,a1
     mul a1,a1,a1
-    mul a2,a2,a2
+    mul a2,a1,a1
     mul a1,a1,a1
-    mul a2,a2,a2
+    mul a2,a1,a1
     mul a1,a1,a1
-    mul a2,a2,a2
+    mul a2,a1,a1
     mul a1,a1,a1
-    mul a2,a2,a2
+    mul a2,a1,a1
     mul a1,a1,a1
-    mul a2,a2,a2
+    mul a2,a1,a1
     mul a1,a1,a1
-    mul a2,a2,a2
     addi a0,a0,-1
     bnez a0,0b
     ret
