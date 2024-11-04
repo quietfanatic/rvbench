@@ -29,23 +29,48 @@ my @domains = ({
     ],
     imps => [
         #'byte_c',
-        #'byte_ialign',
-        #'byte_no_ialign',
-        'e8m1_ialign',
-        'e8m1_no_ialign',
+        #'byte_ia',
+        #'byte',
+        'e8m1_ia',
+        'e8m1',
         'e8m2',
         'e8m4',
         'e8m8',
         'e8any_1_1',
         'e8any_1_2',
-        'e8any_1_2_ialign',
+        'e8any_1_2_ia',
         'e8any_1_3',
         'e8any_1_4',
-        'e8any_1_4_ialign',
-        'e8con',
-        'e8prog',
-        'e8prog_ialign',
+        'e8any_1_4_ia',
+        'e8conservative',
+        'e8progressive',
+        'e8progressive_ia',
         'glibc_2_39',
+        'glibc_2_40',
+        'dummy',
+    ],
+}, {
+     # memcmp benchmarks are incomplete and highly provisional.
+    name => 'memcmp',
+    tasks => [
+        'short',
+        'med',
+        'rndeq',
+        'rndne',
+        'test',
+    ],
+    imps => [
+        'byte',
+        'e8m1',
+        'e8m8',
+        'e8any',
+        'e8conservative',
+        'e8conservative_byte',
+        'e8progressive',
+        'e8radical',
+        'e8hybrid',
+        'e8hybrid_byte',
+        'e8hybrid_byte2',
         'glibc_2_40',
         'dummy',
     ],
@@ -79,7 +104,7 @@ my @domains = ({
         'loadstore_by3ca',
         'loadstore_by4la',
         'loadstore_by4ca',
-    ]
+    ],
 });
 
 sub ensure_path {
@@ -95,14 +120,16 @@ for my $dom (@domains) {
     for my $task (@{$dom->{tasks}}) {
         for my $imp (@{$dom->{imps}}) {
             my $exe = "out/$dom->{name}/$task/$imp";
-            my $src_task = "src/$dom->{name}/task/$task.s";
-            my $pattern = "src/$dom->{name}/imp/$imp.*";
-            my @src_imp = glob($pattern);
-            @src_imp or die "Couldn't find $pattern";
+            my $task_pattern = "src/$dom->{name}/task/$task.*";
+            my $imp_pattern = "src/$dom->{name}/imp/$imp.*";
+            my @src_task = glob($task_pattern);
+            my @src_imp = glob($imp_pattern);
+            @src_task or die "Couldn't find $task_pattern";
+            @src_imp or die "Couldn't find $imp_pattern";
             my $flag = $task eq 'test' ? '-ggdb' : '-s';
-            rule $exe, [@src_imp, $src_task], sub {
+            rule $exe, [@src_task, @src_imp], sub {
                 ensure_path($exe);
-                run @compile, $flag, @src_imp, $src_task, '-o', $exe;
+                run @compile, $flag, @src_task, @src_imp, '-o', $exe;
                  # -mno-riscv-attributes doesn't seem to work
                 if ($flag eq '-s') {
                     run 'strip', '--remove-section=.riscv.attributes', $exe;
@@ -126,7 +153,7 @@ for my $dom (@domains) {
     }
     phony "out/$dom->{name}/build", $dom->{exes};
     phony "out/$dom->{name}/stats", $dom->{stats}, sub {
-        my $out = sprintf '%-20s  ', uc($dom->{name});
+        my $out = sprintf '%-20s ', uc($dom->{name});
         for my $task (@{$dom->{tasks}}) {
             $out .= sprintf ' %5s', $task;
         }

@@ -5,30 +5,31 @@ This is a collection of benchmarks for RISC-V function implementations.  So far,
 perl make.pl --jobs=7  # compile, run, and tabulate stats
 perl make.pl clean_stats  # clear cached stats
 perl make.pl clean  # clear all products and temporary files
+perl make.pl --jobs=7 out/memcpy/stats  # run only stats for memcpy implementations
+perl make.pl --jobs=7 out/<other>/stats  # run only stats for something else
 ```
 
-#### Example Output
+#### Example Output (perl make.pl out/memcpy/stats)
 ```
-MEMCPY                three   32a   32s   32u   64a  128a  256a   2ka   2ks   2ku  64ka  test
----------------------------------------------------------------------------------------------
-              byte_c:   237   341  1118  1120   434   676  1171   798  6207  6201   878  pass
-         byte_ialign:   202   792   797   794  1440  2726  5352  4138  4139  4151  2119  pass
-      byte_no_ialign:   209  1084  1084  1084  2052  3999  7914  6198  6197  6197  2515  pass
-         e8m1_ialign:   121   112   111   112   202   383   745   518   583   583   866  pass
-      e8m1_no_ialign:   122   112   121   121   193   353   675   519   585   583   886  pass
-                e8m2:   142   133   142   142   132   238   508   421   464   465   856  pass
-                e8m4:   182   173   182   182   172   182   433   378   414   419   705  pass
-                e8m8:   333   323   342   344   328   323   423   378   399   398   687  pass
-           e8any_1_1:   122   111   111   111   176   262   423   375   394   394   682  pass
-           e8any_1_2:   121   112   111   112   172   262   403   378   394   394   683  pass
-    e8any_1_2_ialign:   122   111   112   111   172   262   425   379   393   394   701  pass
-           e8any_1_3:   122   111   112   112   172   262   393   378   394   391   662  pass
-           e8any_1_4:   122   110   111   111   172   263   423   377   390   393   679  pass
-    e8any_1_4_ialign:   122   112   111   112   172   263   423   375   394   393   881  pass
-              e8prog:   120   111   111   111   202   343   750   414   435   437   877  pass
-       e8prog_ialign:   122   113   111   111   222   385   805   412   435   437   997  pass
-          glibc_2_39:   192   162   162   164   223   310   593   400   401   463   966  pass
-          glibc_2_40:   199   372   364   364   497   742   934   413   394   450  1256  pass
+MEMCPY                 three   16a   32a   32s   32u   64a  128a  256a   2ka   2ks   2ku  64ka   rnd  test
+---------------------------------------------------------------------------------------------------------
+         e8m1_ialign:   122   182   111   112   112   202   385   745   518   583   585   872  1602  pass
+      e8m1_no_ialign:   122   112   112   122   122   192   353   674   519   583   585   903  1594  pass
+                e8m2:   132   132   132   142   142   132   238   508   423   465   467   881  1558  pass
+                e8m4:   172   172   172   182   182   172   182   433   380   412   416   704  1247  pass
+                e8m8:   323   322   323   343   343   327   323   422   375   400   396   729  1189  pass
+           e8any_1_1:   120   111   112   111   112   172   262   433   370   394   394   673  1219  pass
+           e8any_1_2:   120   111   111   112   112   172   262   423   377   394   391   697  1313  pass
+    e8any_1_2_ialign:   120   111   110   111   111   172   262   423   378   393   392   659  1238  pass
+           e8any_1_3:   122   111   114   111   111   172   262   423   374   392   391   643  1244  pass
+           e8any_1_4:   120   113   111   111   111   172   262   403   378   394   394   676  1220  pass
+    e8any_1_4_ialign:   121   112   110   112   112   172   263   424   377   392   392   694  1241  pass
+               e8con:   119   111   111   112   111   172   262   405   306   313   319   663  1195  pass
+              e8prog:   121   111   112   112   111   202   353   745   411   433   433   994  1750  pass
+       e8prog_ialign:   119   182   111   111   115   222   385   805   408   434   432   879  1658  pass
+          glibc_2_39:   192   162   162   163   161   226   309   583   399   400   459  1001  1615  pass
+          glibc_2_40:   199   368   372   366   373   503   743   943   417   393   455  1493  1846  pass
+               dummy:    81    79    80    77    79    78    77    80    10    10    10     1     2  fail
 ```
 
 #### Conclusions
@@ -57,7 +58,7 @@ SpacemiT K1:
   includes a lot of vector-heavy functions).
 - This is a dual-issue in-order CPU, so it's most efficient to schedule
   instructions so that one instruction doesn't depend on the one immediately
-  before it.  How much of an effect this has may depend on other factors.
+  before it.  This may not matter if throughput is limited by other factors.
 - This processor can only do one load or one store per cycle.  You can load a
   value and immediately store it the next cycle.  Doing multiple loads then
   multiple stores seems to be slightly slower than alternating loads and stores.
@@ -123,7 +124,7 @@ with "j 3b".  Even though it's strictly doing more instructions and branches, it
 runs faster even when always selecting m8.  There is still much about this
 processor that remains mysterious.
 
-A more sophisticated processor would probably run faster just using m8 for
+On a more sophisticated processor, it'll probably be fastest to just use m8 for
 everything.
 ```
 memcpy:
@@ -138,3 +139,12 @@ memcpy:
     add a3,a3,a4
     j 1b
 ```
+
+##### memcmp
+Benchmarks of memcmp are incomplete and not typical of ordinary programs.  I'm
+guessing that in most programs, most string comparisons will find a difference
+within the first 32 or so characters, and if the comparison progresses longer,
+it's likely the strings will be equal.  With that in mind, it's probably better
+to take a progressive approach: always start with m1, and if there's more to
+process, use m2, then m4, and then m8.  Or possibly even start with m1 and then
+go straight to m8.
