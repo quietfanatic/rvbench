@@ -8,17 +8,12 @@ dst: .zero 192
 
 .text
 
-.option push
-.option arch,-c
 .align 3
-    nop # Do a little realigning
 .globl misc
 misc:
     li t0,10000000
     lla a4,src
     lla a5,dst
-    nop # Reset dual-issue pairing, maybe?
-.option arch,+c
 0:  ld a0,0(a4)
     sd a0,0(a5)
     ld a0,8(a4)
@@ -33,10 +28,10 @@ misc:
     sd a0,40(a5)
     ld a0,48(a4)
     sd a0,48(a5)
-    ld a0,52(a4)
-    sd a0,52(a5)
-    ld a0,60(a4)
-    sd a0,60(a5)
+    ld a0,56(a4)
+    sd a0,56(a5)
+    ld a0,64(a4)
+    sd a0,64(a5)
     ld a0,72(a4)
     sd a0,72(a5)
     ld a0,80(a4)
@@ -67,10 +62,7 @@ misc:
     sd a0,176(a5)
     ld a0,184(a4)
     sd a0,184(a5)
-.option arch,-c
     addi t0,t0,-1
     bnez t0,0b
     ret
-.option pop
-
 

@@ -64,16 +64,16 @@ SpacemiT K1 (aka SpacemiT X60 (possibly aka XuanTie C908)):
 - This is a dual-issue in-order CPU, so it's most efficient to schedule
   instructions so that one instruction doesn't depend on the one immediately
   before it.  This may not matter if throughput is limited by other factors.
-- lui and auipc can fuse with intructions that have a 12-bit immediate, such as
-  addi, ld, sd, etc.  This allows the instructions to run as a single unit even
-  if they use the same register.  The fused unit can even be paired with another
-  instruction before or after it, which can bring the IPC above 2.  However the
-  combination of fusing and pairing is only possible if some or all of the
-  instructions are in compressed format, since the fetcher can only fetch around
-  8 bytes at a time (2 uncompressed instructions).  In the rare case where all 4
-  instructions are compressed, a fused unit can pair with another fused unit,
-  bringing the IPC up to 4.  This can only happen if the immediates fit in bits
-  0x0003f03f (0x0001f01f for positive numbers).
+- lui and auipc can fuse with certain instructions after them that make sense,
+  such as addi, ld, sd, etc.  This allows the instructions to run as a single
+  unit even if they use the same register.  The fused unit can even be paired
+  with another instruction before or after it, which can bring the IPC above 2.
+  However the combination of fusing and pairing is only possible if some or all
+  of the instructions are in compressed format, since the fetcher can only fetch
+  around 8 bytes at a time (2 uncompressed instructions).  In the rare case
+  where all 4 instructions are compressed, a fused unit can pair with another
+  fused unit, bringing the IPC up to 4.  This can only happen if the immediates
+  fit in bits 0x0003f03f (0x0001f01f for positive numbers).
 - Only one canonical nop can be executed per cycle, including compressed nops.
   This is likely because the nop is taken at face value as "addi x0,x0,0", which
   both reads and writes the x0 register, so there is a false dependency between
@@ -92,7 +92,7 @@ SpacemiT K1 (aka SpacemiT X60 (possibly aka XuanTie C908)):
   interleaved with pairable instructions.  It's still typically faster than a
   short branch unless the branch is close to 100% predictable.
 - 32-bit scalar integer multiplication has a latency of 3 cycles, 64-bit
-  multiplication takes 5.  There's one multiplier but it's fully pipelined, so
+  multiplication takes \5.  There's one multiplier but it's fully pipelined, so
   one multiplication can be done every cycle.  Integer division is weirdly fast
   with a data-independent latency of 4 cycles for both 32-bit and 64-bit.  The
   divider is half-pipelined so one division can be done every 2 cycles.
@@ -108,17 +108,14 @@ SpacemiT K1 (aka SpacemiT X60 (possibly aka XuanTie C908)):
   shared and can run in parallel.  The floating point divider is not pipelined
   except for the first/last cycle, so you can divide every 15 or 23 cycles.
 - There is no penalty for NaN or subnormal numbers.
-- For the most part, the processor can do one load and one store per cycle, but
-  not two loads or two stores.  However, two load or store instructions can be
-  fused together into a single load/store if all of the following are true:
-    1. They're both 32-bit or both 64-bit
-    2. They both use the same base register
-    3. The second offset is 4 (32-bit) or 8 (64-bit) larger than the first
-    4. The offsets are naturally aligned (the calculated address doesn't have to
-       be aligned)
-    5. They don't have any register interdependencies
-  As with fused upper/lower instructions, these fused instructions can run in
-  parallel with other instructions, but only if enough of them are compressed.
+- Repeated loads and stores seem to vary in IPC from 1.3 to 1.8 (assuming they
+  all hit the L1 cache).  The factors that affect this are somewhat mysterious.
+  Typically 32-bit, 16-bit, and 8-bit loads and stores behave consistently, with
+  32-bit transfers running slightly faster than 16-bit and 8-bit.  64-bit
+  transfers sometimes run slightly slower than 32-bit, but sometimes much
+  faster.  For some reason the rvc-compressed ld instruction is prone to running
+  very slowly, varying based on the alignment of both it and the function
+  containing it.  This smells like a decoder bug.
 
 #### memcpy
 
